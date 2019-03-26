@@ -1,2 +1,59 @@
 ---
 # tasks file for ansible_role_postfix
+- name: Ensure packages are the latest versions
+  apt: 
+    name: "{{ item }}"
+    update_cache: true
+    state: latest
+  with_items:
+    - libsasl2-modules
+    - mailutils
+    - ca-certificates
+    - libsasl2-2
+
+  tags: packages
+
+- name: Install Postfix
+  apt: 
+    name: "{{ item }}"
+    update_cache: true
+    state: present
+  with_items:
+    - postfix
+  tags: packages
+
+- name: use template in send_relay
+  template:
+    src: main_cf.j2
+    dest: /etc/postfix/main.cf
+    mode: 0600
+
+- name: use template in sasl_passwd  
+  template:
+    src: sasl_passwd.j2
+    dest: /etc/postfix/sasl_passwd
+    mode: 0600
+
+- name: hash pass file
+  shell: postmap /etc/postfix/sasl_passwd   
+
+- name: "Secure password files"
+  shell: chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+
+- name: "Secure password files"
+  shell: chmod 0600 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+
+- name: "Edition certificat"
+  shell: openssl req -new -x509 -days 3650 -nodes -out /etc/ssl/certs/postfix.pem -keyout /etc/ssl/private/postfix.pem -subj "/C=FR/ST=Paris/L=Paris/O=Acme Inc. /OU=IT Department/CN=acme.com"
+
+- name: "Secure certif files"
+  shell: chmod 640 /etc/postfix/server.pem
+
+- name: "Secure certif files"
+  shell: chown postfix:postfix /etc/postfix/server.pem
+
+- name: Ensure Postfix is started and enabled on boot.
+  service:
+    name: "{{ postfix_daemon }}"
+    state: "restarted"
+    enabled: "true"
