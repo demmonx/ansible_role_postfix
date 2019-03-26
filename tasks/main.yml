@@ -46,6 +46,9 @@
 - name: "Edition certificat"
   shell: openssl req -new -x509 -days 3650 -nodes -out /etc/ssl/certs/postfix.pem -keyout /etc/ssl/private/postfix.pem -subj "/C=FR/ST=Paris/L=Paris/O=Acme Inc. /OU=IT Department/CN=acme.com"
 
+- name: "copy certif files"
+  shell: cp /etc/ssl/certs/server.pem /etc/postfix/server.pem
+
 - name: "Secure certif files"
   shell: chmod 640 /etc/postfix/server.pem
 
