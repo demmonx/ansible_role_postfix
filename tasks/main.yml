@@ -3,4 +3,4 @@
 - include_tasks: install.yml
 
 - include_tasks: configure.yml
-  when: postfix_host is defined and postfix_pass is defined and postfix_user is defined
+  when: smtp_host is defined and smtp_pass is defined and smtp_user is defined

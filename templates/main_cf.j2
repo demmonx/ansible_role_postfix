@@ -1,6 +1,6 @@
 smtp_sasl_auth_enable = yes
 smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
-relayhost = [{{ postfix_host }}]:587
+relayhost = [{{ smtp_host }}]:587
 smtp_sasl_security_options =
 smtp_use_tls = yes
 smtpd_use_tls=yes
